@@ -1,0 +1,35 @@
+Question 1:
+
+Pt 2:
+
+(This query figures out the estimated arrival time for shipments by adjusting the dispatch time based on the time zone differences between where it starts and where it’s going. It also adds the estimated travel time from the route to get the final arrival time. Even if a shipment doesn’t have a direct route, the query still includes it using a LEFT JOIN)
+
+SELECT
+	s.tracking_number
+   ,lh1.hub_name AS origin_hub
+   ,c1.time_zone AS origin_time_zone
+   ,lh2.hub_name AS destination_hub
+   ,c2.time_zone AS destination_time_zone
+   ,s.dispatch_date
+   ,
+	DATEADD(HOUR,
+	(CAST(SUBSTRING(c2.time_zone, 4, 3) AS INT) - CAST(SUBSTRING(c1.time_zone, 4, 3) AS INT)),
+	s.dispatch_date) AS adjusted_dispatch_date
+   ,
+	DATEADD(HOUR,
+	ISNULL(r.estimated_time, 0) +
+	(CAST(SUBSTRING(c2.time_zone, 4, 3) AS INT) - CAST(SUBSTRING(c1.time_zone, 4, 3) AS INT)),
+	s.dispatch_date) AS estimated_arrival_date
+
+FROM Shipments s
+LEFT JOIN Routes r
+	ON s.origin_hub_id = r.origin_hub_id
+		AND s.destination_hub_id = r.destination_hub_id
+JOIN Logistics_Hubs lh1
+	ON s.origin_hub_id = lh1.hub_id
+JOIN Countries c1
+	ON lh1.country_id = c1.country_id
+JOIN Logistics_Hubs lh2
+	ON s.destination_hub_id = lh2.hub_id
+JOIN Countries c2
+	ON lh2.country_id = c2.country_id;

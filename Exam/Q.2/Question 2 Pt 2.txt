@@ -1,0 +1,25 @@
+Question 2:
+
+Pt 2: 
+(Create a query that calculates the weighted risk profile of a portfolio based on the types of assets held)
+
+WITH RiskValues AS (
+    SELECT 'Low' AS risk_level, 1 AS risk_value
+    UNION ALL
+    SELECT 'Moderate', 2
+    UNION ALL
+    SELECT 'High', 3
+)
+SELECT 
+    ph.portfolio_id,
+    CASE
+        WHEN SUM(ph.quantity * md.market_price * rv.risk_value) / SUM(ph.quantity * md.market_price) <= 1.5 THEN 'Low'
+        WHEN SUM(ph.quantity * md.market_price * rv.risk_value) / SUM(ph.quantity * md.market_price) <= 2.5 THEN 'Moderate'
+        ELSE 'High'
+    END AS WeightedRiskProfile
+FROM Portfolio_Holdings ph
+JOIN Market_Data md ON ph.asset_id = md.asset_id
+JOIN Assets a ON ph.asset_id = a.asset_id
+JOIN RiskValues rv ON a.risk_level = rv.risk_level
+WHERE ph.portfolio_id = 1 -- Replace with the desired portfolio_id
+GROUP BY ph.portfolio_id;

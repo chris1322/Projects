@@ -1,0 +1,43 @@
+
+
+Question 1:
+
+Pt 4:
+
+CREATE PROCEDURE AssignOptimalVehicle
+    @ShipmentID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @ShipmentWeight DECIMAL(18, 2);
+    SELECT @ShipmentWeight = SUM(weight)
+    FROM Goods
+    WHERE shipment_id = @ShipmentID;
+
+    DECLARE @OriginHubID INT;
+    SELECT @OriginHubID = origin_hub_id
+    FROM Shipments
+    WHERE shipment_id = @ShipmentID;
+
+    DECLARE @AssignedVehicleID INT;
+    SELECT TOP 1 @AssignedVehicleID = vehicle_id
+    FROM Transport_Vehicles
+    WHERE status = 'Available'
+      AND max_weight_capacity >= @ShipmentWeight
+    ORDER BY
+        CASE WHEN hub_id = @OriginHubID THEN 0 ELSE 1 END,
+        max_weight_capacity ASC;
+
+    UPDATE Shipments
+    SET vehicle_id = @AssignedVehicleID
+    WHERE shipment_id = @ShipmentID;
+
+    UPDATE Transport_Vehicles
+    SET status = 'In transit'
+    WHERE vehicle_id = @AssignedVehicleID;
+END
+GO
+
+
+EXEC AssignOptimalVehicle @ShipmentID = 2;

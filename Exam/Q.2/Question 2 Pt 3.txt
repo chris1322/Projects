@@ -1,0 +1,25 @@
+Question 2:
+
+Pt 3: 
+(Identify Margin Accounts Exceeding Allowed Leverage Ratio
+Assuming the leverage ratio is 2:1 (i.e., total debt cannot exceed twice the equity))
+
+WITH AccountValues AS (
+    SELECT a.account_id, a.account_balance,
+        SUM(ph.quantity * md.market_price) AS TotalAssetValue
+    FROM Accounts a
+    JOIN Portfolios p ON a.account_id = p.account_id
+    JOIN Portfolio_Holdings ph ON p.portfolio_id = ph.portfolio_id
+    JOIN Market_Data md ON ph.asset_id = md.asset_id
+    WHERE a.account_type = 'Margin'
+    GROUP BY a.account_id, a.account_balance
+)
+SELECT av.account_id, c.first_name, c.last_name,
+    av.TotalAssetValue,
+    av.account_balance AS Equity,
+    (av.TotalAssetValue - av.account_balance) AS Debt,
+    (av.TotalAssetValue - av.account_balance) / NULLIF(av.account_balance, 0) AS LeverageRatio
+FROM AccountValues av
+JOIN Accounts a ON av.account_id = a.account_id
+JOIN Clients c ON a.client_id = c.client_id
+WHERE (av.TotalAssetValue - av.account_balance) / NULLIF(av.account_balance, 0) > 2;

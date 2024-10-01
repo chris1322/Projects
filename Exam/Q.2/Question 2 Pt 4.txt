@@ -1,0 +1,46 @@
+Question 2:
+
+Pt 4:
+(Find Clients Whose Portfolio Risk Profile Exceeds Their Personal Risk Profile)
+
+WITH RiskValues AS (
+    SELECT 'Low' AS risk_level, 1 AS risk_value
+    UNION ALL
+    SELECT 'Moderate', 2
+    UNION ALL
+    SELECT 'High', 3
+), PortfolioRisk AS (
+    SELECT c.client_id, c.first_name, c.last_name, c.risk_profile AS ClientRiskProfile,
+        CASE
+            WHEN SUM((ph.quantity * md.market_price / pv.TotalValue) * rv.risk_value) <= 1.5 THEN 'Low'
+            WHEN SUM((ph.quantity * md.market_price / pv.TotalValue) * rv.risk_value) <= 2.5 THEN 'Moderate'
+            ELSE 'High'
+        END AS PortfolioRiskProfile
+    FROM Clients c
+    JOIN Accounts a ON c.client_id = a.client_id
+    JOIN Portfolios p ON a.account_id = p.account_id
+    JOIN Portfolio_Holdings ph ON p.portfolio_id = ph.portfolio_id
+    JOIN Market_Data md ON ph.asset_id = md.asset_id
+    JOIN Assets ast ON ph.asset_id = ast.asset_id
+    JOIN RiskValues rv ON ast.risk_level = rv.risk_level
+    CROSS APPLY (
+        SELECT SUM(ph2.quantity * md2.market_price) AS TotalValue
+        FROM Portfolio_Holdings ph2
+        JOIN Market_Data md2 ON ph2.asset_id = md2.asset_id
+        WHERE ph2.portfolio_id = p.portfolio_id
+    ) pv
+    GROUP BY c.client_id, c.first_name, c.last_name, c.risk_profile, pv.TotalValue
+)
+SELECT client_id, first_name, last_name, ClientRiskProfile, PortfolioRiskProfile
+FROM PortfolioRisk
+WHERE
+    CASE ClientRiskProfile
+        WHEN 'Low' THEN 1
+        WHEN 'Moderate' THEN 2
+        WHEN 'High' THEN 3
+    END < 
+    CASE PortfolioRiskProfile
+        WHEN 'Low' THEN 1
+        WHEN 'Moderate' THEN 2
+        WHEN 'High' THEN 3
+    END;

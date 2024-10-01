@@ -1,0 +1,19 @@
+Question 1:
+
+Pt 3:
+
+(This query checks for shipments that have been stuck in customs for more than 48 hours. It filters out shipments with a "Customs" status and calculates how long they've been in customs based on the dispatch date. If the time difference is more than 48 hours, it flags those shipments)
+
+SELECT 
+    s.tracking_number,
+    s.origin_hub_id,
+    s.destination_hub_id,
+    s.dispatch_date,
+    s.expected_arrival_date,
+    s.current_status,
+    DATEDIFF(HOUR, s.dispatch_date, GETDATE()) AS hours_in_customs
+FROM 
+    Shipments s
+WHERE 
+    s.current_status = 'Customs'
+    AND DATEDIFF(HOUR, s.dispatch_date, GETDATE()) > 48;

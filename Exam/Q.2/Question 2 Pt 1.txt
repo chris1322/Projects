@@ -1,0 +1,14 @@
+Question 2:
+
+Pt 1: 
+(Calculate the Total Current Value of All Assets in a Client's Portfolio)
+
+SELECT c.client_id, c.first_name, c.last_name, p.portfolio_id,
+    SUM(ph.quantity * md.market_price) AS TotalCurrentValue
+FROM Clients c
+JOIN Accounts a ON c.client_id = a.client_id
+JOIN Portfolios p ON a.account_id = p.account_id
+JOIN Portfolio_Holdings ph ON p.portfolio_id = ph.portfolio_id
+JOIN Market_Data md ON ph.asset_id = md.asset_id
+WHERE c.client_id = 1 -- Replace with the desired client_id
+GROUP BY c.client_id, c.first_name, c.last_name, p.portfolio_id;

@@ -1,0 +1,152 @@
+Question 2:
+
+Pt Triggers & Store Procedures:
+
+Trigger - Prevent High Risk Investment
+
+CREATE TRIGGER trg_PreventHighRiskInvestment
+ON Trades
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN Accounts a ON i.account_id = a.account_id
+        JOIN Clients c ON a.client_id = c.client_id
+        JOIN Assets ast ON i.asset_id = ast.asset_id
+        WHERE c.risk_profile = 'Low' AND ast.risk_level = 'High'
+    )
+    BEGIN
+        RAISERROR('Clients with Low risk profile cannot invest in High risk assets.', 16, 1);
+        ROLLBACK TRANSACTION;
+        RETURN;
+    END
+END
+GO
+
+
+STORE PROCEDURE - Update Portfolio Risk Profile 
+
+
+CREATE PROCEDURE UpdatePortfolioRiskProfile
+    @PortfolioID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @RiskValueMapping TABLE (risk_level VARCHAR(10), risk_value INT);
+    INSERT INTO @RiskValueMapping (risk_level, risk_value)
+    VALUES ('Low', 1), ('Moderate', 2), ('High', 3);
+
+    DECLARE @TotalValue DECIMAL(18,2);
+    SELECT @TotalValue = SUM(ph.quantity * md.market_price)
+    FROM Portfolio_Holdings ph
+    JOIN Market_Data md ON ph.asset_id = md.asset_id
+    WHERE ph.portfolio_id = @PortfolioID;
+
+    IF @TotalValue IS NULL OR @TotalValue = 0
+    BEGIN
+
+        UPDATE Portfolios
+        SET risk_profile = 'Low', total_value = 0
+        WHERE portfolio_id = @PortfolioID;
+        RETURN;
+    END
+
+    DECLARE @WeightedRiskValue FLOAT;
+    SELECT @WeightedRiskValue = SUM(
+        (ph.quantity * md.market_price / @TotalValue) * rv.risk_value
+    )
+    FROM Portfolio_Holdings ph
+    JOIN Market_Data md ON ph.asset_id = md.asset_id
+    JOIN Assets a ON ph.asset_id = a.asset_id
+    JOIN @RiskValueMapping rv ON a.risk_level = rv.risk_level
+    WHERE ph.portfolio_id = @PortfolioID;
+
+    DECLARE @PortfolioRiskProfile VARCHAR(10);
+    IF @WeightedRiskValue <= 1.5
+        SET @PortfolioRiskProfile = 'Low';
+    ELSE IF @WeightedRiskValue <= 2.5
+        SET @PortfolioRiskProfile = 'Moderate';
+    ELSE
+        SET @PortfolioRiskProfile = 'High';
+
+    UPDATE Portfolios
+    SET risk_profile = @PortfolioRiskProfile,
+        total_value = @TotalValue
+    WHERE portfolio_id = @PortfolioID;
+END
+GO
+
+
+TRIGGER - CALL THE Update Portfolio Risk Profile PROCEDURE automatically AFTER EACH TRADE
+
+CREATE TRIGGER trg_UpdatePortfolioRiskAfterTrade
+ON Trades
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    ;WITH AffectedPortfolios AS (
+        SELECT DISTINCT p.portfolio_id
+        FROM inserted i
+        JOIN Accounts a ON i.account_id = a.account_id
+        JOIN Portfolios p ON a.account_id = p.account_id
+    )
+    SELECT portfolio_id INTO #PortfolioIDs FROM AffectedPortfolios;
+
+    UPDATE p
+    SET
+        risk_profile = pr.NewRiskProfile,
+        total_value = pr.TotalValue
+    FROM Portfolios p
+    JOIN #PortfolioIDs pid ON p.portfolio_id = pid.portfolio_id
+    CROSS APPLY (
+        SELECT
+            CASE
+                WHEN pr.WeightedRiskValue <= 1.5 THEN 'Low'
+                WHEN pr.WeightedRiskValue <= 2.5 THEN 'Moderate'
+                ELSE 'High'
+            END AS NewRiskProfile,
+            pr.TotalValue
+        FROM (
+            SELECT
+                SUM(ph.quantity * md.market_price) AS TotalValue,
+                SUM(ph.quantity * md.market_price * rv.risk_value) / SUM(ph.quantity * md.market_price) AS WeightedRiskValue
+            FROM Portfolio_Holdings ph
+            JOIN Market_Data md ON ph.asset_id = md.asset_id
+            JOIN Assets a ON ph.asset_id = a.asset_id
+            JOIN (VALUES ('Low', 1), ('Moderate', 2), ('High', 3)) AS rv(risk_level, risk_value) ON a.risk_level = rv.risk_level
+            WHERE ph.portfolio_id = p.portfolio_id
+        ) pr
+    ) pr
+    WHERE p.portfolio_id = pid.portfolio_id;
+
+    DROP TABLE #PortfolioIDs;
+END
+GO
+
+
+TRIGGER - Deposits dividends
+
+CREATE TRIGGER trg_ProcessDividends
+ON Dividends
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Transactions (account_id, transaction_type, amount, transaction_date)
+    SELECT a.account_id, 'Dividend', ph.quantity * i.dividend_amount_per_share, i.payment_date
+    FROM inserted i
+    JOIN Portfolio_Holdings ph ON ph.asset_id = i.asset_id
+    JOIN Portfolios p ON ph.portfolio_id = p.portfolio_id
+    JOIN Accounts a ON p.account_id = a.account_id
+    WHERE ph.purchase_date <= i.payment_date;
+END
+GO
+
