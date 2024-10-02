@@ -7,7 +7,7 @@
       "RelativeMoniker": "D:0:0:{4F24C9F4-CCA8-4CD7-9040-D7E4B76EE9AE}|WindowsFormsApp1\\WindowsFormsApp1.csproj|solutionrelative:windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4F24C9F4-CCA8-4CD7-9040-D7E4B76EE9AE}|WindowsFormsApp1\\WindowsFormsApp1.csproj|c:\\local repo\\project\\projects\\windowsformsapp1\\windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{4F24C9F4-CCA8-4CD7-9040-D7E4B76EE9AE}|WindowsFormsApp1\\WindowsFormsApp1.csproj|C:\\local repo\\project\\Projects\\WindowsFormsApp1\\windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{4F24C9F4-CCA8-4CD7-9040-D7E4B76EE9AE}|WindowsFormsApp1\\WindowsFormsApp1.csproj|solutionrelative:windowsformsapp1\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
@@ -32,7 +32,7 @@
               "RelativeDocumentMoniker": "WindowsFormsApp1\\Form1.cs",
               "ToolTip": "C:\\local repo\\project\\Projects\\WindowsFormsApp1\\WindowsFormsApp1\\Form1.cs",
               "RelativeToolTip": "WindowsFormsApp1\\Form1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAAgAAADAzMzMzEwRwBcAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-02T02:06:20.708Z",
               "EditorCaption": ""
