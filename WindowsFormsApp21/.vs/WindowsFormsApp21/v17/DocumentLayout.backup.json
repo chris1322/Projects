@@ -1,0 +1,57 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\chris\\source\\repos\\WindowsFormsApp21\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{838935EC-0600-4BC1-B72F-6643EE7D6FB2}|WindowsFormsApp21\\WindowsFormsApp21.csproj|c:\\users\\chris\\source\\repos\\windowsformsapp21\\windowsformsapp21\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{838935EC-0600-4BC1-B72F-6643EE7D6FB2}|WindowsFormsApp21\\WindowsFormsApp21.csproj|solutionrelative:windowsformsapp21\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{838935EC-0600-4BC1-B72F-6643EE7D6FB2}|WindowsFormsApp21\\WindowsFormsApp21.csproj|c:\\users\\chris\\source\\repos\\windowsformsapp21\\windowsformsapp21\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{838935EC-0600-4BC1-B72F-6643EE7D6FB2}|WindowsFormsApp21\\WindowsFormsApp21.csproj|solutionrelative:windowsformsapp21\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\Users\\chris\\source\\repos\\WindowsFormsApp21\\WindowsFormsApp21\\Form1.cs",
+              "RelativeDocumentMoniker": "WindowsFormsApp21\\Form1.cs",
+              "ToolTip": "C:\\Users\\chris\\source\\repos\\WindowsFormsApp21\\WindowsFormsApp21\\Form1.cs*",
+              "RelativeToolTip": "WindowsFormsApp21\\Form1.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-02T00:56:36.428Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Form1.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\chris\\source\\repos\\WindowsFormsApp21\\WindowsFormsApp21\\Form1.cs",
+              "RelativeDocumentMoniker": "WindowsFormsApp21\\Form1.cs",
+              "ToolTip": "C:\\Users\\chris\\source\\repos\\WindowsFormsApp21\\WindowsFormsApp21\\Form1.cs [Design]*",
+              "RelativeToolTip": "WindowsFormsApp21\\Form1.cs [Design]*",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-02T00:56:30.731Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
